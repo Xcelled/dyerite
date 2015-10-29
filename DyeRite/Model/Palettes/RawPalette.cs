@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.IO;
 
 namespace DyeRite.Model.Palettes
 {
@@ -26,6 +27,30 @@ namespace DyeRite.Model.Palettes
 			Width = width;
 			Height = height;
 			Data = data;
+		}
+
+		/// <summary>
+		/// Loads a palette from a .raw file. (32bpp RGBA)
+		/// </summary>
+		/// <param name="filename">The filename.</param>
+		/// <param name="normaizeFlashy">If true, converts alphas of 0 to alphas of 0xff</param>
+		/// <returns>System.Byte[].</returns>
+		public static byte[] LoadRaw(string filename, bool normaizeFlashy = true)
+		{
+			var bytes = File.ReadAllBytes(filename);
+
+			if (normaizeFlashy)
+			{
+				for (var i = 3; i < bytes.Length; i += 4)
+				{
+					if (bytes[i] == 0)
+					{
+						bytes[i] = 0xff;
+					}
+				}
+			}
+
+			return bytes;
 		}
 	}
 }
