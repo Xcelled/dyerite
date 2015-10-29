@@ -29,7 +29,7 @@ namespace DyeRite.Model.Palettes
 				for (var i = 0; i < Data.Length; i += 4)
 				{
 					var ptr = scan0 + i;
-					lab[y, x] = (new Rgb {R = ptr[0], G = ptr[1], B = ptr[2]}).To<Lab>();
+					lab[y, x] = (new Rgb {R = ptr[2], G = ptr[1], B = ptr[0]}).To<Lab>();
 
 					if (++x == Width)
 					{

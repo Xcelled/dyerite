@@ -18,10 +18,10 @@ namespace DyeRite
 		public static void Main()
 		{
 			var p = new RawPalette("test", 256, 256, RawPalette.LoadRaw(@"C:\Users\Scott\Documents\Mabinogi\212\color\cloth.raw"));
-			p.Distortions.Add(new DistortionParameters(1, 1, 1, .5));
+			/*p.Distortions.Add(new DistortionParameters(1, 1, 1, .5));
 			p.Distortions.Add(new DistortionParameters(1, 2, 1, .3));
 			p.Distortions.Add(new DistortionParameters(1, 1, 1, .2));
-			p.Distortions.Add(new DistortionParameters(1, 2, 1, .03));
+			p.Distortions.Add(new DistortionParameters(1, 2, 1, .03));*/
 
 			var map = new DistortionMap(1,
 				File.ReadAllBytes(@"C:\Users\Scott\Documents\Mabinogi\212\color\displace\displace_2.raw"));
@@ -34,7 +34,7 @@ namespace DyeRite
 
 			var diff = new DifferenceEngine();
 
-			var cm = diff.Calculate(new Rgb {R=0x10, G=0xd8, B=0x32}.To<Lab>(), b.LabPalette);
+			var cm = diff.Calculate(new Rgb {R=0x0, G=0xFF, B=0x0}.To<Lab>(), b.LabPalette);
 
 			cm.ToImage().Save("test_map.png");
 		}
