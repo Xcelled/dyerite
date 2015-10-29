@@ -76,6 +76,7 @@
   <ItemGroup>
     <Compile Include="Model\Matching\ColorMap.cs" />
     <Compile Include="Model\Matching\DifferenceEngine.cs" />
+    <Compile Include="Model\Palettes\DistortedPalette.cs" />
     <Compile Include="Model\Palettes\DistortionEngine.cs" />
     <Compile Include="Model\Palettes\DistortionMap.cs" />
     <Compile Include="Model\Palettes\DistortionParameters.cs" />

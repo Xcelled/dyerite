@@ -33,7 +33,13 @@ namespace DyeRite.Model.Palettes
 			return _maps.First(m => m.MapId == id).Data;
 		}
 
-		public byte[] Distort(RawPalette palette, int offset, int outWidth, int outHeight)
+		public DistortedPalette Distort(RawPalette palette, int offset, int outWidth, int outHeight)
+		{
+			var dist = DistortInternal(palette, offset, outWidth, outHeight);
+			return new DistortedPalette(palette.Name, outWidth, outHeight, dist);
+		}
+
+		private byte[] DistortInternal(RawPalette palette, int offset, int outWidth, int outHeight)
 		{
 			var iter = palette.Distortions.GetEnumerator();
 
