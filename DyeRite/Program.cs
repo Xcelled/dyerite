@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using DyeRite.Model.Matching;
 using DyeRite.Model.Palettes;
 
 namespace DyeRite
@@ -42,6 +43,8 @@ namespace DyeRite
 				var bmp = new Bitmap(256, 256, 256 * 4, System.Drawing.Imaging.PixelFormat.Format32bppRgb, (IntPtr)d);
 				bmp.Save("test.png");
 			}
+
+			new ColorMap(2, 2, new double[2, 2] {{0, .33}, {.66, 1}}).ToImage().Save("test_map.png");
 		}
 	}
 }
