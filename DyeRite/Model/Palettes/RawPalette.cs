@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 
 namespace DyeRite.Model.Palettes
@@ -15,7 +16,12 @@ namespace DyeRite.Model.Palettes
 		/// <param name="height">The height.</param>
 		/// <param name="data">The data.</param>
 		public RawPalette(string name, int width, int height, byte[] data)
-			: base(name, width, height, data)
+			: this (name, LinearTo2D(data, width * 4, height))
+		{	
+		}
+
+		public RawPalette(string name, byte[,] data)
+			: base(name, data)
 		{
 		}
 
@@ -41,6 +47,13 @@ namespace DyeRite.Model.Palettes
 			}
 
 			return bytes;
+		}
+
+		private static byte[,] LinearTo2D(byte[] arr, int width, int height)
+		{
+			var tmp = new byte[height, width];
+			Buffer.BlockCopy(arr, 0, tmp, 0, tmp.Length);
+			return tmp;
 		}
 	}
 }

@@ -36,16 +36,16 @@ namespace DyeRite.Model.Palettes
 		public DistortedPalette Distort(RawPalette palette, int offset, int outWidth, int outHeight)
 		{
 			var dist = DistortInternal(palette, offset, outWidth, outHeight);
-			return new DistortedPalette(palette.Name, outWidth, outHeight, dist);
+			return new DistortedPalette(palette.Name, dist);
 		}
 
-		private byte[] DistortInternal(RawPalette palette, int offset, int outWidth, int outHeight)
+		private byte[,] DistortInternal(RawPalette palette, int offset, int outWidth, int outHeight)
 		{
 			var iter = palette.Distortions.GetEnumerator();
 
 			if (!iter.MoveNext())
 			{
-				return Distort(palette.Data, palette.Width, outWidth, outHeight, a => 0, a => 0);
+				return Distort(palette.Data, outWidth, outHeight, a => 0, a => 0);
 			}
 
 			var dist = iter.Current;
@@ -53,7 +53,7 @@ namespace DyeRite.Model.Palettes
 			var map = dist.DistortMapId;
 			var type = dist.Type;
 
-			var output = Distort(palette.Data, dist.Rate, palette.Width, offset, outWidth, outHeight, map, type);
+			var output = Distort(palette.Data, dist.Rate, offset, outWidth, outHeight, map, type);
 
 			while (iter.MoveNext())
 			{
@@ -63,13 +63,13 @@ namespace DyeRite.Model.Palettes
 				map = dist.DistortMapId;
 				type = dist.Type;
 
-				output = Distort(input, dist.Rate, outWidth, offset, outWidth, outHeight, map, type);
+				output = Distort(input, dist.Rate, offset, outWidth, outHeight, map, type);
 			}
 
 			return output;
 		}
 
-		private byte[] Distort(byte[] input, double rate, int inWidth, int offset, int outWidth, int outHeight, int mapId, int type)
+		private byte[,] Distort(byte[,] input, double rate, int offset, int outWidth, int outHeight, int mapId, int type)
 		{
 			if (type == 0 || mapId == 0)
 				return input;
@@ -82,25 +82,25 @@ namespace DyeRite.Model.Palettes
 			const int verticalDistortion = 2;
 
 			if (type == horizDistortion)
-				return Distort(input, inWidth, outWidth, outHeight, a => distortFunc(a), a => 0);
+				return Distort(input, outWidth, outHeight, a => distortFunc(a), a => 0);
 			if (type == verticalDistortion)
-				return Distort(input, inWidth, outWidth, outHeight, a => 0, a => distortFunc(a));
+				return Distort(input, outWidth, outHeight, a => 0, a => distortFunc(a));
 
 			throw new Exception("Unsupported distort type");
 		}
 
-		private static unsafe byte[] Distort(byte[] input, int inWidth, int outWidth, int outHeight, Func<int, int> xDistort, Func<int, int> yDistort)
+		private static unsafe byte[,] Distort(byte[,] input, int outWidth, int outHeight, Func<int, int> xDistort, Func<int, int> yDistort)
 		{
 			if (input.Length % BytesPerPixel != 0)
 				throw new ArgumentException();
 
-			var inStride = inWidth * BytesPerPixel;
+			var inStride = input.GetLength(1);
 			var outStride = outWidth * BytesPerPixel;
 
-			var output = new byte[outWidth * outHeight * BytesPerPixel];
+			var output = new byte[outHeight, outWidth * BytesPerPixel];
 
-			fixed (byte* inPtr = &input[0])
-			fixed (byte* outPtr = &output[0])
+			fixed (byte* inPtr = &input[0, 0])
+			fixed (byte* outPtr = &output[0, 0])
 			for (var y = 0; y < outHeight; y++)
 			{
 				for (var x = 0; x < outWidth; x++)

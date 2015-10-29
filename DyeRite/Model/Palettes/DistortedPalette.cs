@@ -12,7 +12,7 @@ namespace DyeRite.Model.Palettes
 		private readonly Lazy<Lab[,]> _labPalette;
 		public Lab[,] LabPalette { get { return _labPalette.Value; } }
 
-		public DistortedPalette(string name, int width, int height, byte[] data) : base(name, width, height, data)
+		public DistortedPalette(string name, byte[,] data) : base(name, data)
 		{
 			_labPalette = new Lazy<Lab[,]>(ToLab, false);
 		}
@@ -24,12 +24,12 @@ namespace DyeRite.Model.Palettes
 			var x = 0;
 			var y = 0;
 
-			fixed (byte* scan0 = &Data[0])
+			fixed (byte* scan0 = &Data[0,0])
 			{
 				for (var i = 0; i < Data.Length; i += 4)
 				{
 					var ptr = scan0 + i;
-					lab[y, x] = (new Rgb {R = ptr[2], G = ptr[1], B = ptr[0]}).To<Lab>();
+					lab[y, x] = (new Rgb {R = ptr[0], G = ptr[1], B = ptr[2]}).To<Lab>();
 
 					if (++x == Width)
 					{
