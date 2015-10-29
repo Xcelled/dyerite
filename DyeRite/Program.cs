@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using ColorMine.ColorSpaces;
 using DyeRite.Model.Matching;
 using DyeRite.Model.Palettes;
 
@@ -14,9 +15,8 @@ namespace DyeRite
 {
 	class Program
 	{
-		public static unsafe void Main()
+		public static void Main()
 		{
-
 			var p = new RawPalette("test", 256, 256, RawPalette.LoadRaw(@"C:\Users\Scott\Documents\Mabinogi\212\color\cloth.raw"));
 			p.Distortions.Add(new DistortionParameters(1, 1, 1, .5));
 			p.Distortions.Add(new DistortionParameters(1, 2, 1, .3));
@@ -32,7 +32,11 @@ namespace DyeRite
 
 			b.ToImage().Save("test_dist.png");
 
-			new ColorMap(2, 2, new double[2, 2] {{0, .33}, {.66, 1}}).ToImage().Save("test_map.png");
+			var diff = new DifferenceEngine();
+
+			var cm = diff.Calculate(new Rgb {R=0x10, G=0xd8, B=0x32}.To<Lab>(), b.LabPalette);
+
+			cm.ToImage().Save("test_map.png");
 		}
 	}
 }
