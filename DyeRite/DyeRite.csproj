@@ -80,6 +80,7 @@
     <Compile Include="Model\Palettes\DistortionEngine.cs" />
     <Compile Include="Model\Palettes\DistortionMap.cs" />
     <Compile Include="Model\Palettes\DistortionParameters.cs" />
+    <Compile Include="Model\Palettes\Palette.cs" />
     <Compile Include="Model\Palettes\RawPalette.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">

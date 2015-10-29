@@ -3,15 +3,8 @@ using System.IO;
 
 namespace DyeRite.Model.Palettes
 {
-	public class RawPalette
+	public class RawPalette : Palette
 	{
-		public string Name { get; }
-
-		public int Width { get; }
-		public int Height { get; }
-
-		public byte[] Data { get; }
-
 		public List<DistortionParameters> Distortions { get; } = new List<DistortionParameters>();
 
 		/// <summary>
@@ -22,24 +15,21 @@ namespace DyeRite.Model.Palettes
 		/// <param name="height">The height.</param>
 		/// <param name="data">The data.</param>
 		public RawPalette(string name, int width, int height, byte[] data)
+			: base(name, width, height, data)
 		{
-			Name = name;
-			Width = width;
-			Height = height;
-			Data = data;
 		}
 
 		/// <summary>
 		/// Loads a palette from a .raw file. (32bpp RGBA)
 		/// </summary>
 		/// <param name="filename">The filename.</param>
-		/// <param name="normaizeFlashy">If true, converts alphas of 0 to alphas of 0xff</param>
+		/// <param name="normalizeFlashy">If true, converts alphas of 0 to alphas of 0xff</param>
 		/// <returns>System.Byte[].</returns>
-		public static byte[] LoadRaw(string filename, bool normaizeFlashy = true)
+		public static byte[] LoadRaw(string filename, bool normalizeFlashy = true)
 		{
 			var bytes = File.ReadAllBytes(filename);
 
-			if (normaizeFlashy)
+			if (normalizeFlashy)
 			{
 				for (var i = 3; i < bytes.Length; i += 4)
 				{

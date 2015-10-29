@@ -30,19 +30,7 @@ namespace DyeRite
 
 			var b = dst.Distort(p, 0, 256, 256);
 
-			for (var i = 0; i < b.Length; i += 4)
-			{
-				var tmp2 = b[i];
-
-				b[i] = b[i + 2];
-				b[i + 2] = tmp2;
-			}
-
-			fixed (byte* d = &b[0])
-			{
-				var bmp = new Bitmap(256, 256, 256 * 4, System.Drawing.Imaging.PixelFormat.Format32bppRgb, (IntPtr)d);
-				bmp.Save("test.png");
-			}
+			b.ToImage().Save("test_dist.png");
 
 			new ColorMap(2, 2, new double[2, 2] {{0, .33}, {.66, 1}}).ToImage().Save("test_map.png");
 		}

@@ -7,25 +7,13 @@ using ColorMine.ColorSpaces;
 
 namespace DyeRite.Model.Palettes
 {
-	public class DistortedPalette
+	public class DistortedPalette : Palette
 	{
 		private readonly Lazy<Lab[,]> _labPalette;
 		public Lab[,] LabPalette { get { return _labPalette.Value; } }
 
-		public string Name { get; }
-
-		public int Width { get; }
-		public int Height { get; }
-
-		public byte[] Data { get; }
-
-		public DistortedPalette(string name, int width, int height, byte[] data)
+		public DistortedPalette(string name, int width, int height, byte[] data) : base(name, width, height, data)
 		{
-			Name = name;
-			Width = width;
-			Height = height;
-			Data = data;
-
 			_labPalette = new Lazy<Lab[,]>(ToLab, false);
 		}
 
