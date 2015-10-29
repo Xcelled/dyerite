@@ -9,62 +9,89 @@ using System.Threading.Tasks;
 
 namespace DyeRite.Model.Palettes
 {
+	/// <summary>
+	/// An engine for applying distortion transforms to a palette.
+	/// </summary>
 	public class DistortionEngine
 	{
-		public DistortionMap Map { get; }
+		private const int BytesPerPixel = 4;
+		private readonly List<DistortionMap> _maps;
 
-		public DistortionEngine(DistortionMap map)
+		public DistortionEngine(IEnumerable<DistortionMap> maps)
 		{
-			Map = map;
+			_maps = new List<DistortionMap>(maps);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		private int DistortionFunction(double rate, int index, int indexOffset)
+		private static int DistortionFunction(double rate, int index, int indexOffset, byte[] map)
 		{
-			return (int)(rate * Map.Data[(index + indexOffset) % Map.Data.Length]);
+			return (int)(rate * map[(index + indexOffset) % map.Length]);
+		}
+
+		private byte[] FindMap(int id)
+		{
+			return _maps.First(m => m.MapId == id).Data;
 		}
 
 		public byte[] Distort(RawPalette palette, int offset, int outWidth, int outHeight)
 		{
 			var iter = palette.Distortions.GetEnumerator();
-			var output = new byte[outWidth * outHeight * 4];
 
 			if (!iter.MoveNext())
 			{
-				Distort(palette.Data, output, palette.Width, outWidth, outHeight, a => 0, a => 0);
-				return output;
+				return Distort(palette.Data, palette.Width, outWidth, outHeight, a => 0, a => 0);
 			}
 
-			Func<int, int> distortFunc = d => DistortionFunction(iter.Current.Rate, d, offset);
+			var dist = iter.Current;
 
-			if (iter.Current.Type == 1)
-				Distort(palette.Data, output, palette.Width, outWidth, outHeight, a => distortFunc(a), a => 0);
-			else
-				Distort(palette.Data, output, palette.Width, outWidth, outHeight, a => 0, a => distortFunc(a));
+			var map = dist.DistortMapId;
+			var type = dist.Type;
+
+			var output = Distort(palette.Data, dist.Rate, palette.Width, offset, outWidth, outHeight, map, type);
 
 			while (iter.MoveNext())
 			{
+				dist = iter.Current;
 				var input = output;
-				output = new byte[input.Length];
 
-				distortFunc = d => DistortionFunction(iter.Current.Rate, d, offset);
+				map = dist.DistortMapId;
+				type = dist.Type;
 
-				if (iter.Current.Type == 1)
-					Distort(input, output, outWidth, outWidth, outHeight, a => distortFunc(a), a => 0);
-				else
-					Distort(input, output, outWidth, outWidth, outHeight, a => 0, a => distortFunc(a));
+				output = Distort(input, dist.Rate, outWidth, offset, outWidth, outHeight, map, type);
 			}
 
 			return output;
 		}
 
-		private unsafe void Distort(byte[] input, byte[] output, int inWidth, int outWidth, int outHeight, Func<int, int> xDistort, Func<int, int> yDistort)
+		private byte[] Distort(byte[] input, double rate, int inWidth, int offset, int outWidth, int outHeight, int mapId, int type)
 		{
-			if (input.Length % 4 != 0 || output.Length % 4 != 0)
+			if (type == 0 || mapId == 0)
+				return input;
+
+			var map = FindMap(mapId);
+
+			Func<int, int> distortFunc = d => DistortionFunction(rate, d, offset, map);
+
+			const int horizDistortion = 1;
+			const int verticalDistortion = 2;
+
+			if (type == horizDistortion)
+				return Distort(input, inWidth, outWidth, outHeight, a => distortFunc(a), a => 0);
+			if (type == verticalDistortion)
+				return Distort(input, inWidth, outWidth, outHeight, a => 0, a => distortFunc(a));
+
+			throw new Exception("Unsupported distort type");
+		}
+
+		private static unsafe byte[] Distort(byte[] input, int inWidth, int outWidth, int outHeight, Func<int, int> xDistort, Func<int, int> yDistort)
+		{
+			if (input.Length % BytesPerPixel != 0)
 				throw new ArgumentException();
 
-			var inStride = inWidth * 4;
-			var outStride = outWidth * 4;
+			var inStride = inWidth * BytesPerPixel;
+			var outStride = outWidth * BytesPerPixel;
+
+			var output = new byte[outWidth * outHeight * BytesPerPixel];
 
 			fixed (byte* inPtr = &input[0])
 			fixed (byte* outPtr = &output[0])
@@ -75,12 +102,14 @@ namespace DyeRite.Model.Palettes
 					var dx = (x + xDistort(y)) % outWidth;
 					var dy = (y + yDistort(x)) % outHeight;
 
-					var intmp = inPtr + ((y * inStride) + (x * 4)) % input.Length;
-					var outtmp = outPtr + (dy * outStride) + (dx * 4);
+					var intmp = inPtr + ((y * inStride) + (x * BytesPerPixel)) % input.Length;
+					var outtmp = outPtr + (dy * outStride) + (dx * BytesPerPixel);
 
 					*((int*)outtmp) = *((int*)intmp);
 				}
 			}
+
+			return output;
 		}
 	}
 }
