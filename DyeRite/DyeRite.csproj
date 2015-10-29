@@ -70,6 +70,7 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Model\Matching\ColorMap.cs" />
     <Compile Include="Model\Palettes\DistortionEngine.cs" />
     <Compile Include="Model\Palettes\DistortionMap.cs" />
     <Compile Include="Model\Palettes\DistortionParameters.cs" />
