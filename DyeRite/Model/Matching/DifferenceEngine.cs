@@ -22,7 +22,7 @@ namespace DyeRite.Model.Matching
 			Parallel.For(0, height, i =>
 			{
 				for (var j = 0; j < width; j++)
-					results[i, j] = Math.Max(0, Math.Min(palette[i, j].Compare(target, CieDe2000), 100));
+					results[i, j] = palette[i, j].Compare(target, CieDe2000);
 			});
 
 			return new ColorMap(width, height, results);

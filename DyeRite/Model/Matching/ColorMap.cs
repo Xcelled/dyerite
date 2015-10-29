@@ -32,7 +32,8 @@ namespace DyeRite.Model.Matching
 				for (var y = 0; y < Height; y++)
 					for (var x = 0; x < Width; x++)
 					{
-						var scale = (byte)((1 - Data[y, x]/100) * 255);
+						var percent = Math.Max(0, Math.Min(100, Data[y, x])) / 100;
+						var scale = (byte)((1 - percent) * 255);
 						ptr[0] = scale;
 						ptr[1] = scale;
 						ptr[2] = scale;
