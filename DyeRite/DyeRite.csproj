@@ -74,6 +74,7 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Model\Matching\FilteredMap.cs" />
     <Compile Include="Model\Matching\ColorMap.cs" />
     <Compile Include="Model\Matching\DifferenceEngine.cs" />
     <Compile Include="Model\Palettes\DistortedPalette.cs" />

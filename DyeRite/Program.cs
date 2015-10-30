@@ -37,9 +37,13 @@ namespace DyeRite
 
 			var diff = new DifferenceEngine();
 
-			var cm = diff.Calculate(new Rgb {R=0xFF, G=0xFF, B=0xff}.To<Lab>(), b.LabPalette);
+			var cm = diff.Calculate(new Rgb {R=162, G=135, B=135}.To<Lab>(), b.LabPalette);
 
 			cm.ToImage().Save("test_map.png");
+
+			var fm = cm.Filter(5);
+
+			fm.ToImage().Save("test_filter.png");
 		}
 	}
 }

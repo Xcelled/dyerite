@@ -7,31 +7,19 @@ using System.Threading.Tasks;
 
 namespace DyeRite.Model.Matching
 {
-	public class ColorMap
+	public class FilteredMap
 	{
 		public int Width { get; }
 		public int Height { get; }
 
-		public double[,] Data { get; }
+		public bool[,] Filter { get; }
 
-		public ColorMap(double[,] data)
+		public FilteredMap(bool[,] filter)
 		{
-			Width = data.GetLength(1);
-			Height = data.GetLength(0);
-			Data = data;
-		}
+			Filter = filter;
 
-		public FilteredMap Filter(double tolerance)
-		{
-			var clamped = new bool[Height, Width];
-
-			for (var y = 0; y < Height; y++)
-				for (var x = 0; x < Width; x++)
-				{
-					clamped[y, x] = Data[y, x] <= tolerance;
-				}
-
-			return new FilteredMap(clamped);
+			Width = filter.GetLength(1);
+			Height = filter.GetLength(0);
 		}
 
 		public unsafe Bitmap ToImage()
@@ -45,11 +33,12 @@ namespace DyeRite.Model.Matching
 				for (var y = 0; y < Height; y++)
 					for (var x = 0; x < Width; x++)
 					{
-						var percent = Math.Max(0, Math.Min(100, Data[y, x])) / 100;
-						var scale = (byte)((1 - percent) * 255);
-						ptr[0] = scale;
-						ptr[1] = scale;
-						ptr[2] = scale;
+						if (Filter[y, x])
+						{
+							ptr[0] = 255;
+							ptr[1] = 255;
+							ptr[2] = 255;
+						}
 						ptr[3] = 255;
 						ptr += 4;
 					}
@@ -57,5 +46,6 @@ namespace DyeRite.Model.Matching
 				return new Bitmap(Width, Height, Width * 4, System.Drawing.Imaging.PixelFormat.Format32bppRgb, (IntPtr)scan0);
 			}
 		}
+
 	}
 }

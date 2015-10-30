@@ -25,7 +25,7 @@ namespace DyeRite.Model.Matching
 					results[i, j] = palette[i, j].Compare(target, CieDe2000);
 			});
 
-			return new ColorMap(width, height, results);
+			return new ColorMap(results);
 		}
 	}
 }
