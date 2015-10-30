@@ -1,4 +1,4 @@
-﻿namespace DyeRite.Model.Palettes
+﻿namespace DyeRite.Model.Distortion
 {
 	public class DistortionParameters
 	{

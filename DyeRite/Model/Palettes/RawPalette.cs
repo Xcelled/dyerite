@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using DyeRite.Model.Distortion;
 
 namespace DyeRite.Model.Palettes
 {

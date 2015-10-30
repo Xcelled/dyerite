@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace DyeRite.Model.Palettes
+﻿namespace DyeRite.Model.Distortion
 {
 	public class DistortionMap
 	{

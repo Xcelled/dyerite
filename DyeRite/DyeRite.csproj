@@ -77,9 +77,9 @@
     <Compile Include="Model\Matching\ColorMap.cs" />
     <Compile Include="Model\Matching\DifferenceEngine.cs" />
     <Compile Include="Model\Palettes\DistortedPalette.cs" />
-    <Compile Include="Model\Palettes\DistortionEngine.cs" />
-    <Compile Include="Model\Palettes\DistortionMap.cs" />
-    <Compile Include="Model\Palettes\DistortionParameters.cs" />
+    <Compile Include="Model\Distortion\DistortionEngine.cs" />
+    <Compile Include="Model\Distortion\DistortionMap.cs" />
+    <Compile Include="Model\Distortion\DistortionParameters.cs" />
     <Compile Include="Model\Palettes\Palette.cs" />
     <Compile Include="Model\Palettes\RawPalette.cs" />
     <Compile Include="Program.cs" />

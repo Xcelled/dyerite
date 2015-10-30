@@ -1,13 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
-using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
+using DyeRite.Model.Palettes;
 
-namespace DyeRite.Model.Palettes
+namespace DyeRite.Model.Distortion
 {
 	/// <summary>
 	/// An engine for applying distortion transforms to a palette.
