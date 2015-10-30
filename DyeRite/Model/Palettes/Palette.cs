@@ -14,13 +14,13 @@ namespace DyeRite.Model.Palettes
 		public int Width { get; }
 		public int Height { get; }
 
-		public byte[,] Data { get; }
+		public int[,] Data { get; }
 
-		protected Palette(string name, byte[,] data)
+		protected Palette(string name, int[,] data)
 		{
 			Name = name;
 
-			Width = data.GetLength(1) / 4;
+			Width = data.GetLength(1);
 			Height = data.GetLength(0);
 
 			Data = data;
@@ -28,18 +28,11 @@ namespace DyeRite.Model.Palettes
 
 		public unsafe Bitmap ToImage()
 		{
-			var tmpData = new byte[Height, Width * 4];
-			Buffer.BlockCopy(Data, 0, tmpData, 0, Data.Length);
+			var tmpData = new int[Data.Length];
+			Buffer.BlockCopy(Data, 0, tmpData, 0, Data.Length * sizeof(int));
 
-			fixed (byte* d = &tmpData[0, 0])
+			fixed (int* d = &tmpData[0])
 			{
-				for (var i = 0; i < tmpData.Length; i += 4)
-				{
-					var tmp = d[i];
-					d[i] = d[i + 2];
-					d[i + 2] = tmp;
-				}
-
 				return new Bitmap(Width, Height, Width * 4, System.Drawing.Imaging.PixelFormat.Format32bppRgb, (IntPtr)d);
 			}
 		}

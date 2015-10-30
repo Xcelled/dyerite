@@ -15,12 +15,12 @@ namespace DyeRite.Model.Palettes
 		/// <param name="width">The width.</param>
 		/// <param name="height">The height.</param>
 		/// <param name="data">The data.</param>
-		public RawPalette(string name, int width, int height, byte[] data)
-			: this (name, LinearTo2D(data, width * 4, height))
-		{	
+		public RawPalette(string name, int width, int height, int[] data)
+			: this(name, LinearTo2D(data, width, height))
+		{
 		}
 
-		public RawPalette(string name, byte[,] data)
+		public RawPalette(string name, int[,] data)
 			: base(name, data)
 		{
 		}
@@ -30,29 +30,41 @@ namespace DyeRite.Model.Palettes
 		/// </summary>
 		/// <param name="filename">The filename.</param>
 		/// <param name="normalizeFlashy">If true, converts alphas of 0 to alphas of 0xff</param>
-		/// <returns>System.Byte[].</returns>
-		public static byte[] LoadRaw(string filename, bool normalizeFlashy = true)
+		/// <returns>ARGB array</returns>
+		public static unsafe int[] LoadRaw(string filename, bool normalizeFlashy = true)
 		{
 			var bytes = File.ReadAllBytes(filename);
 
-			if (normalizeFlashy)
+			fixed (byte* scan0 = &bytes[0])
 			{
-				for (var i = 3; i < bytes.Length; i += 4)
+				// Put the bytes in BGRA
+				for (var i = 0; i < bytes.Length; i += 4)
 				{
-					if (bytes[i] == 0)
+					var tmp = scan0[i + 0];
+					scan0[i + 0] = scan0[i + 2];
+					scan0[i + 2] = tmp;
+
+					if (normalizeFlashy)
 					{
-						bytes[i] = 0xff;
+						if (bytes[i + 3] == 0)
+						{
+							bytes[i + 3] = 0xff;
+						}
 					}
 				}
+
 			}
 
-			return bytes;
+			var output = new int[bytes.Length / 4];
+			Buffer.BlockCopy(bytes, 0, output, 0, bytes.Length);
+
+			return output;
 		}
 
-		private static byte[,] LinearTo2D(byte[] arr, int width, int height)
+		private static int[,] LinearTo2D(int[] arr, int width, int height)
 		{
-			var tmp = new byte[height, width];
-			Buffer.BlockCopy(arr, 0, tmp, 0, tmp.Length);
+			var tmp = new int[height, width];
+			Buffer.BlockCopy(arr, 0, tmp, 0, tmp.Length * sizeof(int));
 			return tmp;
 		}
 	}

@@ -14,7 +14,6 @@ namespace DyeRite.Model.Palettes
 	/// </summary>
 	public class DistortionEngine
 	{
-		private const int BytesPerPixel = 4;
 		private readonly List<DistortionMap> _maps;
 
 		public DistortionEngine(IEnumerable<DistortionMap> maps)
@@ -39,13 +38,13 @@ namespace DyeRite.Model.Palettes
 			return new DistortedPalette(palette.Name, dist);
 		}
 
-		private byte[,] DistortInternal(RawPalette palette, int offset, int outWidth, int outHeight)
+		private int[,] DistortInternal(RawPalette palette, int offset, int outWidth, int outHeight)
 		{
 			var iter = palette.Distortions.GetEnumerator();
 
 			if (!iter.MoveNext())
 			{
-				return Distort(palette.Data, outWidth, outHeight, a => 0, a => 0);
+				return DistortInternal(palette.Data, outWidth, outHeight, a => 0, a => 0);
 			}
 
 			var dist = iter.Current;
@@ -53,7 +52,7 @@ namespace DyeRite.Model.Palettes
 			var map = dist.DistortMapId;
 			var type = dist.Type;
 
-			var output = Distort(palette.Data, dist.Rate, offset, outWidth, outHeight, map, type);
+			var output = DistortInternal(palette.Data, dist.Rate, offset, outWidth, outHeight, map, type);
 
 			while (iter.MoveNext())
 			{
@@ -63,13 +62,25 @@ namespace DyeRite.Model.Palettes
 				map = dist.DistortMapId;
 				type = dist.Type;
 
-				output = Distort(input, dist.Rate, offset, outWidth, outHeight, map, type);
+				output = DistortInternal(input, dist.Rate, offset, outWidth, outHeight, map, type);
 			}
 
 			return output;
 		}
 
-		private byte[,] Distort(byte[,] input, double rate, int offset, int outWidth, int outHeight, int mapId, int type)
+		/// <summary>
+		/// Runs the distortion transformation.
+		/// </summary>
+		/// <param name="input">The input data to read</param>
+		/// <param name="rate">The rate.</param>
+		/// <param name="offset">The offset.</param>
+		/// <param name="outWidth">Width of the output array (in elements)</param>
+		/// <param name="outHeight">Height of the input array (in elements)</param>
+		/// <param name="mapId">The distortion map identifier.</param>
+		/// <param name="type">The type of distortion.</param>
+		/// <returns>Distorted input</returns>
+		/// <exception cref="Exception">Unsupported distort type</exception>
+		private int[,] DistortInternal(int[,] input, double rate, int offset, int outWidth, int outHeight, int mapId, int type)
 		{
 			if (type == 0 || mapId == 0)
 				return input;
@@ -82,25 +93,31 @@ namespace DyeRite.Model.Palettes
 			const int verticalDistortion = 2;
 
 			if (type == horizDistortion)
-				return Distort(input, outWidth, outHeight, a => distortFunc(a), a => 0);
+				return DistortInternal(input, outWidth, outHeight, a => distortFunc(a), a => 0);
 			if (type == verticalDistortion)
-				return Distort(input, outWidth, outHeight, a => 0, a => distortFunc(a));
+				return DistortInternal(input, outWidth, outHeight, a => 0, a => distortFunc(a));
 
 			throw new Exception("Unsupported distort type");
 		}
 
-		private static unsafe byte[,] Distort(byte[,] input, int outWidth, int outHeight, Func<int, int> xDistort, Func<int, int> yDistort)
+		/// <summary>
+		/// Runs the distortion transformation.
+		/// </summary>
+		/// <param name="input">The input data to read</param>
+		/// <param name="outWidth">Width of the output array (in elements)</param>
+		/// <param name="outHeight">Height of the input array (in elements)</param>
+		/// <param name="xDistort">X distortion function. Passed Y coord.</param>
+		/// <param name="yDistort">Y Distortion function. Passed X coord</param>
+		/// <returns>Distorted input</returns>
+		private static unsafe int[,] DistortInternal(int[,] input, int outWidth, int outHeight, Func<int, int> xDistort, Func<int, int> yDistort)
 		{
-			if (input.Length % BytesPerPixel != 0)
-				throw new ArgumentException();
-
 			var inStride = input.GetLength(1);
-			var outStride = outWidth * BytesPerPixel;
+			var outStride = outWidth;
 
-			var output = new byte[outHeight, outWidth * BytesPerPixel];
+			var output = new int[outHeight, outWidth];
 
-			fixed (byte* inPtr = &input[0, 0])
-			fixed (byte* outPtr = &output[0, 0])
+			fixed (int* inPtr = &input[0, 0])
+			fixed (int* outPtr = &output[0, 0])
 			for (var y = 0; y < outHeight; y++)
 			{
 				for (var x = 0; x < outWidth; x++)
@@ -108,10 +125,7 @@ namespace DyeRite.Model.Palettes
 					var dx = (x + xDistort(y)) % outWidth;
 					var dy = (y + yDistort(x)) % outHeight;
 
-					var intmp = inPtr + ((y * inStride) + (x * BytesPerPixel)) % input.Length;
-					var outtmp = outPtr + (dy * outStride) + (dx * BytesPerPixel);
-
-					*((int*)outtmp) = *((int*)intmp);
+					outPtr[dy * outStride + dx] = inPtr[((y * inStride) + x) % input.Length];
 				}
 			}
 
