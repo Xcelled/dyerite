@@ -38,7 +38,7 @@ namespace DyeRite
 
 			var diff = new DifferenceEngine();
 
-			var cm = diff.Calculate(new Rgb {R=0, G=0, B=0}.To<Lab>(), b.LabPalette);
+			var cm = diff.Calculate(new Rgb {R=255, G=255, B=255}.To<Lab>(), b.LabPalette);
 
 			cm.ToImage().Save("test_map.png");
 
@@ -50,8 +50,8 @@ namespace DyeRite
 
 			var matches = new MatchingEngine().Match(b, cm, fm, picker);
 
-			foreach (var m in matches.OrderByDescending(m => m.NumberOfSuccess).ThenBy(m => m.Score))
-				Console.WriteLine(m);
+			//foreach (var m in matches.OrderByDescending(m => m.NumberOfSuccess).ThenBy(m => m.Score))
+				//Console.WriteLine(m);
 		}
 	}
 }

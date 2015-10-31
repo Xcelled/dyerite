@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using ColorMine.ColorSpaces;
 using ColorMine.ColorSpaces.Comparisons;
+using static DyeRite.PerformanceTracker;
 
 namespace DyeRite.Model.Difference
 {
@@ -13,6 +14,8 @@ namespace DyeRite.Model.Difference
 			var height = palette.GetLength(0);
 			var width = palette.GetLength(1);
 
+			BeginTrack(nameof(Calculate), "Calculating DeltaE");
+
 			var results = new double[height, width];
 
 			Parallel.For(0, height, i =>
@@ -20,6 +23,8 @@ namespace DyeRite.Model.Difference
 				for (var j = 0; j < width; j++)
 					results[i, j] = palette[i, j].Compare(target, CieDe2000);
 			});
+
+			EndTrack(nameof(Calculate), "Calculated DeltaE map");
 
 			return new DeltaEMap(results);
 		}

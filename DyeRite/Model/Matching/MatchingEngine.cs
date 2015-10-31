@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using DyeRite.Model.Difference;
 using DyeRite.Model.Palettes;
 using DyeRite.Model.Pickers;
+using static DyeRite.PerformanceTracker;
 
 namespace DyeRite.Model.Matching
 {
@@ -18,21 +19,14 @@ namespace DyeRite.Model.Matching
 		{
 			var results = new ConcurrentBag<Match>();
 
-#if DEBUG
-			Debug.WriteLine("Beginning brute force matching.");
-			var s = Stopwatch.StartNew();
-#endif
+			BeginTrack(nameof(Match), "Beginning brute force matching.");
 
 			Parallel.ForEach(filter.Index, p =>
 			{
 				results.Add(DoMatch(p, palette, scoreMap, filter, picker));
 			});
 
-#if DEBUG
-			s.Stop();
-
-			Debug.WriteLine($"Calculated {results.Count} matches in {s.ElapsedMilliseconds:N0} ms");
-#endif
+			EndTrack(nameof(Match), "Calculated {0:N0} matches", results.Count);
 
 			return new List<Match>(results);
 		}

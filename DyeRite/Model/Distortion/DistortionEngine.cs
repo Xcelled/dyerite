@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using DyeRite.Model.Palettes;
+using static DyeRite.PerformanceTracker;
 
 namespace DyeRite.Model.Distortion
 {
@@ -31,7 +32,12 @@ namespace DyeRite.Model.Distortion
 
 		public DistortedPalette Distort(RawPalette palette, int offset, int outWidth, int outHeight)
 		{
+			BeginTrack(nameof(Distort), "Distorting palette");
+
 			var dist = DistortInternal(palette, offset, outWidth, outHeight);
+
+			EndTrack(nameof(Distort), "Distorted palette");
+
 			return new DistortedPalette(palette.Name, dist);
 		}
 
