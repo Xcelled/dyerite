@@ -6,11 +6,12 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Windows;
 using ColorMine.ColorSpaces;
 using DyeRite.Model.Difference;
 using DyeRite.Model.Distortion;
+using DyeRite.Model.Matching;
 using DyeRite.Model.Palettes;
+using DyeRite.Model.Pickers;
 
 namespace DyeRite
 {
@@ -37,13 +38,20 @@ namespace DyeRite
 
 			var diff = new DifferenceEngine();
 
-			var cm = diff.Calculate(new Rgb {R=162, G=135, B=135}.To<Lab>(), b.LabPalette);
+			var cm = diff.Calculate(new Rgb {R=0, G=0, B=0}.To<Lab>(), b.LabPalette);
 
 			cm.ToImage().Save("test_map.png");
 
-			var fm = cm.Filter(5);
+			var fm = cm.Filter(0);
 
 			fm.ToImage().Save("test_filter.png");
+
+			var picker = new Picker(new[] {new Point(0, 0), new Point(-11, -11), new Point(10, -11), new Point(-11, 10), new Point(10, 10) });
+
+			var matches = new MatchingEngine().Match(b, cm, fm, picker);
+
+			foreach (var m in matches.OrderByDescending(m => m.NumberOfSuccess).ThenBy(m => m.Score))
+				Console.WriteLine(m);
 		}
 	}
 }

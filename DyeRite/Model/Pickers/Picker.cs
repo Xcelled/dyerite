@@ -7,13 +7,21 @@ using System.Threading.Tasks;
 
 namespace DyeRite.Model.Pickers
 {
+	/// <summary>
+	/// Collection of offsets (cursors). The picker can be moved around the palette.
+	/// </summary>
 	public class Picker
 	{
 		private readonly List<Point> _cursors;
 
+		public IReadOnlyList<Point> Cursors { get; }
+		public Point FirstCursor { get; }
+
 		public Picker(IEnumerable<Point> cursors)
 		{
 			_cursors = new List<Point>(cursors);
+			Cursors = _cursors.AsReadOnly();
+			FirstCursor = _cursors.First();
 		}
 
 		/// <summary>
@@ -26,7 +34,7 @@ namespace DyeRite.Model.Pickers
 		/// <returns>Enumerable of the cursor positions on the palette.</returns>
 		public IEnumerable<Point> GetCursors(int x, int y, int paletteWidth, int paletteHeight)
 		{
-			return _cursors.Select(c => new Point((x + c.X) % paletteWidth, (y + c.Y) % paletteHeight));
+			return _cursors.Select(c => c.TileOffset(x, y, paletteWidth, paletteHeight));
 		}
 	}
 }
