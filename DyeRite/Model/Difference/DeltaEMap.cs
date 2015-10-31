@@ -11,6 +11,8 @@ namespace DyeRite.Model.Difference
 
 		public double[,] Data { get; }
 
+		public double this[int y, int x] => Data[y, x];
+
 		public DeltaEMap(double[,] data)
 		{
 			Width = data.GetLength(1);

@@ -11,6 +11,8 @@ namespace DyeRite.Model.Difference
 		public bool[,] Filter { get; }
 		public Point[] Index { get; }
 
+		public bool this[int y, int x] => Filter[y, x];
+
 		public FilteredMap(bool[,] filter, Point[] index)
 		{
 			Filter = filter;

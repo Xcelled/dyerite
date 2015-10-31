@@ -16,6 +16,8 @@ namespace DyeRite.Model.Palettes
 
 		public int[,] Data { get; }
 
+		public int this[int y, int x] => Data[y, x];
+
 		protected Palette(string name, int[,] data)
 		{
 			Name = name;
