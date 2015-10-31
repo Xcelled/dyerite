@@ -83,6 +83,7 @@
     <Compile Include="Model\Distortion\DistortionParameters.cs" />
     <Compile Include="Model\Palettes\Palette.cs" />
     <Compile Include="Model\Palettes\RawPalette.cs" />
+    <Compile Include="Model\Pickers\Picker.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
