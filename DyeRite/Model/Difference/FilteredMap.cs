@@ -1,11 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace DyeRite.Model.Matching
+namespace DyeRite.Model.Difference
 {
 	public class FilteredMap
 	{
@@ -13,10 +9,12 @@ namespace DyeRite.Model.Matching
 		public int Height { get; }
 
 		public bool[,] Filter { get; }
+		public Point[] Index { get; }
 
-		public FilteredMap(bool[,] filter)
+		public FilteredMap(bool[,] filter, Point[] index)
 		{
 			Filter = filter;
+			Index = index;
 
 			Width = filter.GetLength(1);
 			Height = filter.GetLength(0);

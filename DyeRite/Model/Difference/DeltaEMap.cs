@@ -1,20 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace DyeRite.Model.Matching
+namespace DyeRite.Model.Difference
 {
-	public class ColorMap
+	public class DeltaEMap
 	{
 		public int Width { get; }
 		public int Height { get; }
 
 		public double[,] Data { get; }
 
-		public ColorMap(double[,] data)
+		public DeltaEMap(double[,] data)
 		{
 			Width = data.GetLength(1);
 			Height = data.GetLength(0);
@@ -25,13 +22,19 @@ namespace DyeRite.Model.Matching
 		{
 			var clamped = new bool[Height, Width];
 
+			var index = new List<Point>(20);
+
 			for (var y = 0; y < Height; y++)
 				for (var x = 0; x < Width; x++)
 				{
-					clamped[y, x] = Data[y, x] <= tolerance;
+					if (Data[y, x] <= tolerance)
+					{
+						clamped[y, x] = true;
+						index.Add(new Point(x, y));
+					}
 				}
 
-			return new FilteredMap(clamped);
+			return new FilteredMap(clamped, index.ToArray());
 		}
 
 		public unsafe Bitmap ToImage()

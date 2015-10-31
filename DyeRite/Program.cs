@@ -8,8 +8,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using ColorMine.ColorSpaces;
+using DyeRite.Model.Difference;
 using DyeRite.Model.Distortion;
-using DyeRite.Model.Matching;
 using DyeRite.Model.Palettes;
 
 namespace DyeRite
